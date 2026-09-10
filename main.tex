@@ -1,0 +1,98 @@
+\documentclass[12pt,letterpaper]{article}
+
+\input{preamble}
+\usepackage[spanish,es-nodecimaldot,es-tabla]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{newtxtext,newtxmath}
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{pgfgantt}
+\usepackage{float}
+\usepackage{graphicx}
+
+\renewcommand{\contentsname}{Tabla de Contenido}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{0.2cm}
+    
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \draw[draw=gray!50, fill=gray!4, rounded corners=4pt] (0,0) rectangle (7, 2.5);
+            \node[text=gray!60, font=\normalsize] at (3.5, 1.25) {[Logo UniAndes]};
+        \end{tikzpicture}
+    \end{figure}
+    
+    \vspace{1.6cm}
+    
+    {\Large \bfseries Detección Automática de Minería Ilegal en la Amazonía Colombiana usando Videos FLIR: Un Enfoque Integral de Limpieza de Ruido, Particionamiento y Segmentación Panóptica \par}
+    
+    \vspace{2.2cm}
+    
+    {\large \textbf{Laura Martínez-Galindo \\ Manuela Galarza \\ Jorge Eduardo Solórzano Díaz} \par}
+    \vspace{0.4cm}
+    {\normalsize Asesor: Juan Pablo Reyes Gómez, PhD \par}
+    
+    \vfill
+    
+    {\normalsize Propuesta de Proyecto de Grado \par}
+    \vspace{0.25cm}
+    {\normalsize Departamento de Ingeniería de Sistemas y Computación \par}
+    {\normalsize Facultad de Ingeniería, Universidad de los Andes \par}
+    {\normalsize Bogotá D.C., Colombia \par}
+    \vspace{0.35cm}
+    {\normalsize \today \par}
+    \vspace*{0.5cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section*{Resumen}
+\addcontentsline{toc}{section}{Resumen}
+La minería ilegal en la Amazonía colombiana genera graves afectaciones ambientales y sociales que requieren mecanismos automatizados de vigilancia. Aunque los sensores térmicos FLIR aerotransportados permiten capturar videos detallados de zonas de difícil acceso, su análisis automatizado se ve limitado por múltiples factores. Este proyecto propone e implementa un pipeline integral, funcional y reproducible para abordar estos retos a través de tres componentes principales: (1) Limpieza de ruido y eliminación de simbología HUD mediante segmentación heurística, inpainting y reducción autosupervisada espacial y temporal; (2) Un esquema robusto de particionamiento basado en agrupamiento de fotogramas altamente correlacionados para evitar fugas de datos y garantizar una estimación confiable de la capacidad de generalización; y (3) Una arquitectura basada en segmentación panóptica (Panoptic FCN) que permite representar conjuntamente regiones ambientales continuas (ríos, zonas degradadas) e instancias de objetos (maquinaria, dragas) a partir de supervisión puntual débil, complementada con modelos de lenguaje visual para contextualizar temporalmente las actividades detectadas.
+
+\section{Introducción}
+La minería ilegal representa un problema ambiental, social y económico que impulsa la deforestación y la contaminación hídrica en territorios protegidos e indígenas, particularmente en la Amazonía colombiana. Dada la complejidad de acceso y la necesidad de monitoreo remoto, los sensores FLIR aerotransportados facilitan el seguimiento en estas misiones. Sin embargo, procesar esta cantidad masiva de información visual presenta retos importantes. 
+
+En primer lugar, los videos térmicos presentan ruido y desenfoque, así como simbología de vuelo superpuesta (HUD) que ocluye la escena y engaña los modelos predictivos. En segundo lugar, al extraer múltiples fotogramas de un video, existe una fuerte correlación temporal y espacial entre imágenes, lo que genera problemas de fuga de información y sobreestimación del desempeño si los datos se dividen aleatoriamente. Por último, los enfoques tradicionales se centran en cajas delimitadoras que no capturan relaciones explícitas espaciales entre los cuerpos de agua, zonas alteradas y la maquinaria pesada de manera unificada.
+
+Este trabajo conjunto articula soluciones para estos tres frentes: preprocesamiento y limpieza para mejorar la calidad de los fotogramas (Laura Martínez), estrategias de agrupamiento espacial y temporal para prevenir fugas de datos y validar rigurosamente el modelo (Jorge Solórzano), y el uso de un modelo de segmentación panóptica que brinda una comprensión contextual completa a nivel de píxel con bajo costo de etiquetado (Manuela Galarza).
+
+\section{Objetivos}
+
+\subsection{Objetivo General}
+Implementar un pipeline funcional y reproducible de detección de minería ilegal en videos FLIR capturados por aeronaves de la Fuerza Aeroespacial Colombiana que articule de manera estructurada las etapas de limpieza de ruido, partición de datos sin fuga de información y segmentación panóptica contextual.
+
+\subsection{Objetivos Específicos}
+\begin{itemize}
+    \item \textbf{Limpieza de Ruido y HUD:} Cuantificar y eliminar la información del HUD usando métodos heurísticos e inpainting, e implementar modelos autosupervisados (espaciales y temporales) de reducción de ruido térmico preservando el contenido crítico de la escena.
+    \item \textbf{Agrupamiento y Particionamiento:} Caracterizar la similitud visual y temporal entre fotogramas usando modelos como CLIP/DINOv2, implementar agrupamientos basados en densidad (HDBSCAN), y validar un particionamiento que asegure la generalización reduciendo la correlación entre conjuntos de entrenamiento y prueba.
+    \item \textbf{Segmentación Panóptica:} Diseñar e implementar una arquitectura Panoptic FCN para modelar simultáneamente "stuff" (ríos y zonas degradadas) y "things" (maquinaria, dragas, cambuches) con supervisión débil puntual, incorporando mecanismos de fusión de contexto.
+\end{itemize}
+
+\section{Metodología}
+El proyecto se desarrollará bajo la metodología CRISP-ML(Q).
+
+\subsection{Fase 1: Preparación y Limpieza de los Datos}
+Se aborda el ruido térmico y el inpainting del HUD mediante propagación de flujo (ProPainter). Se aplican estrategias de Noise2Void, Noise2Noise y Frames2Residual adaptadas al ruido correlacionado vertical y espacial propio de microbolómetros.
+
+\subsection{Fase 2: Identificación de Agrupaciones y Fugas de Datos}
+Para asegurar particiones robustas, se comparan reducciones de dimensionalidad (t-SNE y PaCMAP) sobre características extraídas de modelos multimodales, seguido por agrupamientos densos. Los clústeres evitan que imágenes altamente correlacionadas queden en subconjuntos separados, validando el desempeño con la distancia de Bhattacharyya y mAP.
+
+\subsection{Fase 3: Modelado Panóptico y Fusión Contextual}
+Las imágenes depuradas son procesadas por Panoptic FCN, una red completamente convolucional que infiere la máscara de cada objeto a partir de anotaciones de puntos (supervisión débil). Al representar categorías ambientales (\textit{stuff}) y objetos (\textit{things}) simultáneamente, el sistema aprende dependencias topológicas de la minería aurífera.
+
+\section{Resultados Esperados}
+\begin{itemize}
+    \item Un pipeline modular completamente automatizado para preprocesar video FLIR.
+    \item Un particionamiento validado que elimina estimaciones optimistas.
+    \item Un modelo de segmentación panóptica optimizado que mejora el reconocimiento en la minería aluvial sobre \textit{baselines} anteriores de YOLO.
+\end{itemize}
+
+\printbibliography
+
+\end{document}

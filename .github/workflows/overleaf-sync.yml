@@ -1,0 +1,36 @@
+name: Sync to Overleaf
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Push to Overleaf
+        env:
+          OVERLEAF_PROJECT_ID: 6182249883cfqncwryrctv
+          OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
+          OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
+        run: |
+          if [ -z "$OVERLEAF_EMAIL" ] || [ -z "$OVERLEAF_PASSWORD" ]; then
+            echo "Error: OVERLEAF_EMAIL or OVERLEAF_PASSWORD secrets are not set."
+            exit 1
+          fi
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          # Agregamos overleaf como repositorio remoto
+          # Hay que URL encodear el correo por si tiene caracteres especiales como @
+          ENCODED_EMAIL=$(echo "$OVERLEAF_EMAIL" | jq -Rr '@uri')
+          ENCODED_PASSWORD=$(echo "$OVERLEAF_PASSWORD" | jq -Rr '@uri')
+          git remote add overleaf "https://${ENCODED_EMAIL}:${ENCODED_PASSWORD}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
+          # Hacemos push a la rama master de overleaf
+          git push overleaf HEAD:master --force
