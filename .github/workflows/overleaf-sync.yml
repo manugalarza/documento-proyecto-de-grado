@@ -31,5 +31,9 @@ jobs:
           ENCODED_EMAIL=$(printf "%s" "$OVERLEAF_EMAIL" | jq -sRr '@uri')
           ENCODED_PASSWORD=$(printf "%s" "$OVERLEAF_PASSWORD" | jq -sRr '@uri')
           git remote add overleaf "https://${ENCODED_EMAIL}:${ENCODED_PASSWORD}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
-          # Hacemos push a la rama master de overleaf, habilitando trazas de debug
-          GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push overleaf HEAD:master --force
+          # Overleaf suele rechazar los 'git push --force'.
+          # Por tanto, primero traemos la historia de Overleaf y la fusionamos.
+          git pull overleaf master --allow-unrelated-histories --no-edit || true
+          
+          # Hacemos push normal a la rama master de overleaf
+          GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push overleaf HEAD:master
