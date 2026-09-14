@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
@@ -27,10 +27,9 @@ jobs:
           fi
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          # Agregamos overleaf como repositorio remoto
-          # Hay que URL encodear el correo por si tiene caracteres especiales como @
-          ENCODED_EMAIL=$(echo "$OVERLEAF_EMAIL" | jq -Rr '@uri')
-          ENCODED_PASSWORD=$(echo "$OVERLEAF_PASSWORD" | jq -Rr '@uri')
+          # Utilizamos printf para evitar saltos de línea y jq -sRr para encodear
+          ENCODED_EMAIL=$(printf "%s" "$OVERLEAF_EMAIL" | jq -sRr '@uri')
+          ENCODED_PASSWORD=$(printf "%s" "$OVERLEAF_PASSWORD" | jq -sRr '@uri')
           git remote add overleaf "https://${ENCODED_EMAIL}:${ENCODED_PASSWORD}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
           # Hacemos push a la rama master de overleaf
           git push overleaf HEAD:master --force
