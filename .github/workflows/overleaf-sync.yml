@@ -27,10 +27,11 @@ jobs:
           fi
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          # Utilizamos printf para evitar saltos de línea y jq -sRr para encodear
-          ENCODED_EMAIL=$(printf "%s" "$OVERLEAF_EMAIL" | jq -sRr '@uri')
-          ENCODED_PASSWORD=$(printf "%s" "$OVERLEAF_PASSWORD" | jq -sRr '@uri')
-          git remote add overleaf "https://${ENCODED_EMAIL}:${ENCODED_PASSWORD}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
+          
+          # Usamos un credential helper para pasar el email y el token de forma segura sin encodear URLs
+          git config --global credential.helper '!f() { echo "username=${OVERLEAF_EMAIL}"; echo "password=${OVERLEAF_PASSWORD}"; }; f'
+          
+          git remote add overleaf "https://git.overleaf.com/${OVERLEAF_PROJECT_ID}"
           # Overleaf suele rechazar los 'git push --force'.
           # Por tanto, primero traemos la historia de Overleaf y la fusionamos.
           git pull overleaf master --allow-unrelated-histories --no-edit || true
