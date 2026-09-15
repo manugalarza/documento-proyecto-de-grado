@@ -30,9 +30,12 @@ jobs:
           
           # Overleaf requiere que el usuario sea literalmente 'git' y la contraseña sea el Token.
           git remote add overleaf "https://git:${OVERLEAF_PASSWORD}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
+          
           # Overleaf suele rechazar los 'git push --force'.
-          # Por tanto, primero traemos la historia de Overleaf y la fusionamos.
-          git pull overleaf main --allow-unrelated-histories --no-edit || true
+          # Traemos la historia de Overleaf y la fusionamos forzando que la versión de GitHub gane (-s ours)
+          # para evitar conflictos con el main.tex por defecto de Overleaf.
+          git fetch overleaf main
+          git merge overleaf/main -s ours --allow-unrelated-histories --no-edit
           
           # Hacemos push normal a la rama main de overleaf
           GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push overleaf HEAD:main
