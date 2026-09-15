@@ -32,7 +32,7 @@ jobs:
           git remote add overleaf "https://git:${OVERLEAF_PASSWORD}@git.overleaf.com/${OVERLEAF_PROJECT_ID}"
           # Overleaf suele rechazar los 'git push --force'.
           # Por tanto, primero traemos la historia de Overleaf y la fusionamos.
-          git pull overleaf master --allow-unrelated-histories --no-edit || true
+          git pull overleaf main --allow-unrelated-histories --no-edit || true
           
-          # Hacemos push normal a la rama master de overleaf
-          GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push overleaf HEAD:master
+          # Hacemos push normal a la rama main de overleaf
+          GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push overleaf HEAD:main
