@@ -1,0 +1,34 @@
+\section{Metodología}
+\label{sec:metodologia}
+El proyecto se desarrolla con CRISP-ML(Q), un modelo de proceso iterativo para proyectos de aprendizaje automático que incorpora actividades de aseguramiento de calidad a lo largo del ciclo de vida~\cite{studer2021crispml}. Los tres componentes aplican las fases de entendimiento del problema y de los datos, preparación de los datos, modelado y evaluación; el despliegue se limita a dejar el pipeline ejecutable en el clúster Hypatia de la Universidad de los Andes. El proceso fue iterativo: en la etapa de limpieza, al observar que el mejor modelo de reducción de ruido cambiaba de un video a otro, se regresó a la fase de entendimiento de los datos para caracterizar el ruido según el régimen de operación del sensor (\fref{sec:limpieza}).
+
+\subsection{Datos}
+Se utilizan exclusivamente datos secundarios: tres videos aéreos suministrados por la FAC (\fref{tab:videos}) y los fotogramas anotados de trabajos previos~\cite{acosta2025eyes}. Los videos son archivos digitales estándar (H.264, 8 bits, RGB) y no matrices radiométricas. Su manejo sigue el protocolo de datos avalado por el Comité de Ética: los videos, sus fotogramas y los artefactos que permitan reconstruirlos son confidenciales, y este documento solo incluye ejemplos visuales autorizados.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Videos de trabajo. El video 3 llegó como ocho copias idénticas de un mismo clip; se usa solo la primera.}
+\label{tab:videos}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Video} & \textbf{Resolución} & \textbf{fps} & \textbf{Frames} & \textbf{Duración} \\
+\midrule
+Video 1 & 1920$\times$1080 & 30 & 19.800 & 11:00 \\
+Video 2 & 1280$\times$720 & 29,97 & 83.011 & 46:10 \\
+Video 3 & 1280$\times$720 & 30 & 23.315 & 12:57 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Flujo del pipeline}
+Las etapas se encadenan mediante un contrato simple: las tres versiones del conjunto de datos (original, sin HUD y sin HUD ni ruido) tienen los mismos nombres de archivo y las mismas etiquetas, de modo que cualquier partición se aplica igual a las tres emparejando por nombre.
+
+\begin{enumerate}
+    \item \textbf{Limpieza} (\fref{sec:limpieza}): extracción de frames a su tasa original, lectura del régimen del sensor en el HUD, máscara del HUD, inpainting de video, clasificación de cada frame por régimen y aplicación del modelo de reducción de ruido de ese régimen.
+    \item \textbf{Particionamiento} (\fref{sec:particion}): representaciones visuales, agrupamiento de fotogramas correlacionados y asignación de cada grupo a una única partición.
+    \item \textbf{Segmentación panóptica} (\fref{sec:panoptica}): entrenamiento con supervisión puntual y evaluación sobre las particiones sin fuga.
+\end{enumerate}
+
+\subsection{Entorno computacional}
+Los experimentos se ejecutaron en el clúster Hypatia mediante el gestor de trabajos Slurm. El código, las configuraciones y las métricas se mantienen bajo control de versiones; los datos privados están excluidos de los repositorios.

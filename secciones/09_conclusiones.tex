@@ -1,0 +1,10 @@
+\section{Conclusiones y trabajo futuro}
+\label{sec:conclusiones}
+\begin{itemize}
+    \item La eliminación del HUD mediante segmentación heurística e inpainting de video superó la meta: la mediana de reducción por imagen estuvo entre 98,4\,\% y 98,6\,\% en los tres videos, y 1.115 de las 1.116 imágenes superaron el 80\,\%.
+    \item El ruido de estos videos depende del régimen de operación del sensor y no solo del video. Leer el régimen directamente del HUD permite asignar cada frame, y cada video nuevo, al modelo que le corresponde.
+    \item No todos los videos necesitan reducción de ruido: en dos de los tres regímenes dominantes el ruido está cerca del límite de cuantización y el problema principal es la compresión.
+    \item Las métricas sin referencia NIQE y BRISQUE no bastan por sí solas, porque premian el desenfoque; deben acompañarse de medidas de conservación de detalle y de color, y de revisión visual.
+\end{itemize}
+
+\pendiente{conclusiones de reducción de ruido (ronda 3), particionamiento, segmentación panóptica e integración; trabajo futuro.}

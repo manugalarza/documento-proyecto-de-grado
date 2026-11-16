@@ -1,0 +1,30 @@
+\section{Objetivos}
+
+\subsection{Objetivo General}
+Implementar un pipeline funcional y reproducible de detección de minería ilegal en videos FLIR capturados por aeronaves de la Fuerza Aeroespacial Colombiana sobre la Amazonía colombiana que articule las etapas de limpieza de ruido, partición de datos sin fuga de información y segmentación panóptica.
+
+\subsection{Objetivos Específicos}
+
+\paragraph{Limpieza de HUD y ruido.}
+\begin{enumerate}
+    \item Cuantificar la reducción del HUD antes y después de aplicar un método basado en segmentación heurística e inpainting, verificando una disminución de al menos el 80\,\% de los píxeles identificados como HUD.
+    \item Implementar al menos tres modelos autosupervisados de reducción de ruido, incluyendo enfoques espaciales y temporales, y evaluarlos mediante las métricas no referenciales NIQE y BRISQUE, buscando una reducción de al menos el 8\,\% respecto al video sin procesar.
+    \item Evaluar el impacto de la eliminación del HUD y la reducción de ruido sobre la detección de objetos pequeños, comparando las instancias detectadas y el recall para verificar que este se conserve dentro de un $\pm 5\,\%$, con inspección visual de los resultados.
+    \item Implementar un modelo de lenguaje visual que realice \textit{dense video captioning}, localizando y describiendo segmentos temporales de interés, y evaluar cualitativamente su relevancia.
+\end{enumerate}
+
+\paragraph{Particionamiento sin fuga de datos.}
+\begin{enumerate}
+    \item Caracterizar la correlación espaciotemporal entre los fotogramas mediante representaciones visuales de modelos preentrenados (DINOv2 y CLIP) y medidas de similitud o distancia (similitud coseno y distancia de Bhattacharyya).
+    \item Comparar estrategias de agrupamiento sobre esas representaciones, empleando técnicas de reducción de dimensionalidad y algoritmos basados en densidad.
+    \item Implementar una estrategia de particionamiento que asigne cada escena o clúster de forma íntegra a una única partición, conservando una cobertura adecuada de las clases.
+    \item Validar el esquema propuesto frente a la partición previa y a un esquema aleatorio, cuantificando la similitud entre particiones y comparando el desempeño del detector mediante Precision, Recall, mAP@50 y mAP@50--95.
+    \item Ensamblar los componentes de limpieza, particionamiento y segmentación panóptica en un pipeline funcional y reproducible.
+\end{enumerate}
+
+\paragraph{Segmentación panóptica.}
+\begin{enumerate}
+    \item Diseñar y entrenar una arquitectura basada en Panoptic FCN que combine la segmentación semántica de río y SDZI con las anotaciones de objetos existentes (maquinaria pesada, dragas, cambuches, edificaciones, contenedores y vehículos).
+    \item Evaluar el pipeline completo mediante métricas de segmentación panóptica (Panoptic Quality y sus componentes), segmentación semántica (IoU y F1 por clase) y detección de instancias (recall y precisión por clase), alcanzando un recall de al menos 0,6 para SDZI bajo un criterio comparable con la línea base.
+    \item Validar cualitativamente el pipeline mediante una demostración a la Fuerza Aeroespacial Colombiana, con un instrumento que recoja sus observaciones.
+\end{enumerate}

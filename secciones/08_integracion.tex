@@ -1,0 +1,7 @@
+\section{Integración del pipeline}
+\label{sec:integracion}
+Las etapas se integran de forma que la salida de cada una sea la entrada de la siguiente. La limpieza entrega tres versiones del conjunto con nombres y etiquetas idénticos, junto con un archivo de correspondencia que indica, para cada imagen, el video, el frame, el segundo y el régimen del sensor. El particionamiento asigna cada imagen a entrenamiento, validación o prueba por nombre de archivo, por lo que la misma partición sirve para las tres versiones. La segmentación panóptica consume esas particiones y permite aislar el efecto de la limpieza y de la mitigación de la fuga de datos sobre el desempeño final.
+
+Para un video nuevo no es necesario volver a entrenar la reducción de ruido: se lee su régimen en el HUD y se aplica el modelo ya escogido para ese régimen. Si aparece un régimen desconocido, el lector lo marca y se vuelve a caracterizar.
+
+\pendiente{diagrama del pipeline completo, interfaces entre etapas, tiempos de ejecución y evaluación integrada (ablación: original frente a limpio, partición previa frente a partición por clústeres).}

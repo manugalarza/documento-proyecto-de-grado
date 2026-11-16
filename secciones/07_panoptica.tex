@@ -1,0 +1,20 @@
+\section{Segmentación panóptica}
+\label{sec:panoptica}
+% Responsable: Manuela Galarza. Texto base tomado de la propuesta; completar implementación y resultados.
+
+\subsection{Planteamiento}
+En una escena minera coexisten regiones ambientales, como ríos y zonas de alteración del suelo, con objetos como maquinaria, dragas, vehículos y edificaciones. Analizarlos de manera independiente omite información contextual útil. Este componente evalúa si una representación conjunta mejora la caracterización de la escena frente a la detección mediante cajas, en particular para SDZI, cuyo recall en la línea base fue de 0,425~\cite{acosta2025eyes}.
+
+\subsection{Método}
+\begin{enumerate}
+    \item \textbf{Formulación.} Río y SDZI se modelan como categorías \textit{stuff}; maquinaria pesada, dragas, cambuches, edificaciones, contenedores y vehículos como categorías \textit{things}.
+    \item \textbf{Preparación de los datos.} Para evitar anotaciones completas a nivel de píxel en todo el conjunto de entrenamiento se usa supervisión débil mediante puntos: cada caja existente localiza la instancia y de ella se generan puntos internos. Para validación y prueba se construye un subconjunto de referencia con anotaciones completas a nivel de píxel, necesario para calcular IoU y las métricas panópticas.
+    \item \textbf{Modelado.} Se parte de Panoptic FCN~\cite{li2022panopticfcn}, que representa \textit{things} y \textit{stuff} en un mismo modelo y admite supervisión por puntos, y se le incorpora un mecanismo de fusión de contexto que aprovecha la coexistencia espacial entre regiones y objetos. Se evalúa el número de puntos (P5, P10, P20 y P30) y se compara la configuración base con la versión con contexto, manteniendo iguales los datos y las particiones.
+    \item \textbf{Evaluación.} Panoptic Quality (PQ), Segmentation Quality (SQ) y Recognition Quality (RQ), globales y por tipo de categoría; IoU, F1 y recall para \textit{stuff}; precisión, recall y AP de máscara para \textit{things}. La selección de configuraciones usa solo validación y el conjunto de prueba se evalúa una única vez. Para comparar con la línea base, su modelo YOLO se reevalúa sobre el mismo conjunto de prueba y las predicciones panópticas de SDZI se convierten a cajas.
+\end{enumerate}
+
+\subsection{Resultados}
+\pendiente{Manuela: conjunto anotado para segmentación panóptica, efecto del número de puntos y del mecanismo de contexto, métricas finales y recall de SDZI frente a la meta de 0,6.}
+
+\subsection{Validación con la Fuerza Aeroespacial Colombiana}
+\pendiente{Manuela: demostración, instrumento utilizado y observaciones recogidas.}

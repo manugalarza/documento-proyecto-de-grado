@@ -1,0 +1,19 @@
+\section{Particionamiento sin fuga de datos}
+\label{sec:particion}
+% Responsable: Jorge Solórzano. Texto base tomado de la propuesta; completar implementación y resultados.
+
+\subsection{Planteamiento}
+Evitar que un mismo archivo aparezca en más de una partición no garantiza independencia entre los subconjuntos, porque fotogramas distintos pueden representar una misma escena o segmentos temporalmente próximos. Se requiere una unidad de particionamiento más adecuada que el fotograma individual y un procedimiento cuantitativo para medir la similitud entre los subconjuntos.
+
+\subsection{Método}
+\begin{enumerate}
+    \item \textbf{Entendimiento de los datos.} Caracterización de la distribución de imágenes e instancias por clase, de la relación temporal entre fotogramas y de la composición de la partición previa~\cite{acosta2025eyes}, que sirve de línea base.
+    \item \textbf{Preparación.} Cada fotograma conserva un identificador único, su procedencia y su posición temporal. Se generan representaciones visuales con CLIP~\cite{radford2021clip} y DINOv2~\cite{oquab2024dinov2}, se calculan similitud coseno sobre los embeddings normalizados y distancia de Bhattacharyya~\cite{kailath1967bhattacharyya}, y se reducen las representaciones con t-SNE~\cite{vandermaaten2008tsne} y PaCMAP~\cite{wang2021pacmap}.
+    \item \textbf{Modelado.} Se comparan algoritmos de agrupamiento basados en densidad (DBSCAN~\cite{ester1996dbscan}, OPTICS~\cite{ankerst1999optics} y HDBSCAN~\cite{mcinnes2017hdbscan}), que no requieren fijar el número de grupos y admiten muestras sin grupo. Los clústeres de la configuración seleccionada se usan como unidades indivisibles para construir entrenamiento, validación y prueba, procurando conservar la cobertura de las clases.
+    \item \textbf{Evaluación.} Se comparan tres esquemas (partición previa, aleatoria reproducible y por clústeres) mediante la similitud entre particiones y el desempeño del detector (Precision, Recall, mAP@50 y mAP@50--95), con arquitectura, preprocesamiento y configuración de entrenamiento comparables. Las métricas del detector se interpretan junto con las de similitud, sin tomar una variación de desempeño como evidencia aislada de menor fuga.
+\end{enumerate}
+
+Como las tres versiones del conjunto de datos comparten nombres de archivo, la partición resultante se aplica igual a todas emparejando por nombre.
+
+\subsection{Resultados}
+\pendiente{Jorge: caracterización de la correlación entre fotogramas, comparación de configuraciones de agrupamiento, partición final y comparación entre los tres esquemas.}
