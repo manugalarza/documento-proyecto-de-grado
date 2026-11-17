@@ -83,6 +83,15 @@ C (video 3) & 0,24 [0,15--0,36] & 0,43 & 0,43 & 0,21 & 0,00\,\% & 1,91 \\
 \label{fig:ruido_regimen}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[height=3.4cm]{figures/limpieza/ruido_regimen_A.jpg}\hfill
+\includegraphics[height=3.4cm]{figures/limpieza/ruido_regimen_B.jpg}\\[0.2cm]
+\includegraphics[height=3.4cm]{figures/limpieza/ruido_regimen_C.jpg}
+\caption{Recortes ampliados del ruido en los regímenes A (arriba, izquierda), B (arriba, derecha) y C (abajo).}
+\label{fig:ruido_recortes}
+\end{figure}
+
 De esta medición salen las decisiones de modelado:
 \begin{itemize}
     \item \textbf{El tipo de ruido lo define el régimen.} En A el ruido es alto, de grano fino casi independiente entre píxeles y con impulsos; en B y C es bajo y correlacionado con el vecino (en grumos), y en C además dominan los bloques de compresión.
@@ -126,7 +135,18 @@ Video 3 & 163 & 98,6\,\% & 98,1--99,8\,\% & 97,5\,\% & 91,8\,\% \\
 \label{fig:hud}
 \end{figure}
 
-\pendiente{ejemplos visuales antes y después (original, máscara, sin HUD), una vez se confirme cuáles frames están autorizados para el documento.}
+La \fref{fig:hud_ejemplos} muestra dos ejemplos del resultado.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.32\textwidth]{figures/limpieza/ej_hud_original.jpg}\hfill
+\includegraphics[width=0.32\textwidth]{figures/limpieza/ej_hud_mascara.jpg}\hfill
+\includegraphics[width=0.32\textwidth]{figures/limpieza/ej_hud_sin.jpg}\\[0.2cm]
+\includegraphics[width=0.32\textwidth]{figures/limpieza/ej_hud_v3_original.jpg}\hspace{0.02\textwidth}
+\includegraphics[width=0.32\textwidth]{figures/limpieza/ej_hud_v3_sin.jpg}
+\caption{Eliminación del HUD. Arriba, un frame del video 1: original, píxeles que entran a la máscara y resultado. Abajo, un frame del video 3: original y resultado. Las imágenes se muestran a resolución reducida.}
+\label{fig:hud_ejemplos}
+\end{figure}
 
 \subsection{Reducción de ruido}
 
@@ -160,6 +180,15 @@ La comparación se hizo en tres rondas. La primera cubrió UDVD, AP-BSN~\cite{le
 Un método se descarta si altera el color, y la pérdida de bordes se revisa visualmente en recortes a tamaño real.
 
 \subsubsection{Resultados}
+\paragraph{Primera ronda.} La \fref{fig:ronda1} muestra, por imagen, el ruido que queda y la fracción de bordes conservados con cada método (97 imágenes del régimen B y 120 de los regímenes A y C). En el régimen A la mediana de $\sigma$ pasa de 5,4 sin limpiar a 0,7 con UDVD, 0,9 con Blind2Unblind y 1,0 con AP-BSN, mientras Neighbor2Neighbor y el filtro clásico casi no la cambian (3,6 y 3,3). AP-BSN lo logra a costa del detalle: conserva una mediana de 0,49 de los bordes. En los regímenes B y C el ruido de partida ya está junto al límite visible (medianas de 0,43 y 0,35) y ningún método lo baja de forma apreciable sin perder bordes: UDVD conserva una mediana de 0,71 en B y de 0,34 en C. La medida de bordes de esta ronda cuenta el grano como borde, por lo que en el régimen A favorece a los métodos que limpian poco; esto motivó las métricas de grano y de color de la segunda ronda.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/limpieza/ronda1_dist.png}
+\caption{Primera ronda: ruido residual (arriba) y bordes conservados (abajo) por imagen, para cada método y régimen. Círculo: mediana; barra gruesa: p25--p75; línea: p5--p95.}
+\label{fig:ronda1}
+\end{figure}
+
 \paragraph{Regímenes B y C (videos 1 y 3).} El ruido de estos regímenes está cerca del nivel de cuantización, así que no es visible. Lo que sí tienen son bloques de compresión, y las redes que los atenúan también desenfocan detalle real. En las dos primeras rondas la conclusión fue dejarlos sin reducción de ruido y aplicarles solo la eliminación del HUD. \pendiente{confirmar o corregir con la ronda 3.}
 
 \paragraph{Régimen A (video 2).} Es el único con ruido visible y concentra el 74\,\% del conjunto anotado. En la segunda ronda, AP-BSN y MM-BSN redujeron el grano de 9,4 a entre 1,7 y 2,0, pero desplazaban el color; Neighbor2Neighbor y Blind2Unblind casi no limpiaron y UDVD introdujo un patrón de cuadrícula. El desplazamiento de color se corrigió tomando el brillo de la salida de la red y el color de la entrada suavizada, con lo que la razón de croma quedó cerca de 0,97.
